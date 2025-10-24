@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
+import { useAuth } from '../context/AuthContext'; // Importar useAuth
 
 const API_BASE_URL = "http://localhost:8080/api";
 
 function Folio() {
+  const { isAdmin } = useAuth(); // Obtener la función isAdmin
   const [estanciasActivas, setEstanciasActivas] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [estanciaSeleccionadaId, setEstanciaSeleccionadaId] = useState('');
@@ -157,7 +159,7 @@ function Folio() {
                     <td>{c.servicioNombre}</td>
                     <td>${c.subtotal.toFixed(2)}</td>
                     <td>{new Date(c.fecha).toLocaleString()}</td>
-                    <td><button className="btn btn-sm btn-outline-danger" onClick={() => eliminarCargo(c.id)}>X</button></td>
+                    <td>{isAdmin() && <button className="btn btn-sm btn-outline-danger" onClick={() => eliminarCargo(c.id)}>X</button>}</td>
                   </tr>
                 ))
               ) : (

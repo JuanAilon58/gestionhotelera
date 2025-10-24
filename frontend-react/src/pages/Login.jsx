@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -23,10 +24,18 @@ function Login() {
       <div className="row justify-content-center">
         <div className="col-md-6">
           <div className="card">
-            <div className="card-header bg-primary text-white">
+            <div className="card-header bg-primary text-white text-center">
               <h3 className="mb-0">Iniciar Sesión</h3>
             </div>
             <div className="card-body">
+              <div className="card-header bg-primary text-white d-flex align-items-center justify-content-center"> {/* Agrega d-flex, align-items-center, justify-content-center */}
+                   <img 
+                      src="/logo/22222.png" 
+                      alt="Logo del hotel" 
+                      style={{ width: '175px', marginRight: '25px' }} // Ajusta el tamaño y el margen
+                    />
+                  
+              </div>
               <form onSubmit={handleLogin}>
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">Usuario</label>

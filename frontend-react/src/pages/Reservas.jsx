@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext'; // Importar useAuth
 
 const API_BASE_URL = "http://localhost:8080/api";
 
 function Reservas() {
+  const { isAdmin } = useAuth(); // Obtener la función isAdmin
   const [clientes, setClientes] = useState([]);
   const [habitaciones, setHabitaciones] = useState([]);
   const [tiposHabitacion, setTiposHabitacion] = useState([]);
   const [reservaciones, setReservaciones] = useState([]);
+  const [editingReservacion, setEditingReservacion] = useState(null);
 
   const [newReserva, setNewReserva] = useState({
     clienteId: '',
@@ -47,8 +50,14 @@ function Reservas() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/reservaciones`, newReserva);
-      alert("✅ Reserva guardada correctamente");
+      if (editingReservacion) {
+        await axios.put(`${API_BASE_URL}/reservaciones/${editingReservacion.id}`, newReserva);
+        alert("✅ Reserva actualizada correctamente");
+        setEditingReservacion(null);
+      } else {
+        await axios.post(`${API_BASE_URL}/reservaciones`, newReserva);
+        alert("✅ Reserva guardada correctamente");
+      }
       setNewReserva({
         clienteId: '',
         habitacionId: '',
@@ -73,6 +82,11 @@ function Reservas() {
       console.error("Error al eliminar reserva:", error);
       alert("No se pudo eliminar la reserva.");
     }
+  };
+
+  const handleEditReservacion = (reserva) => {
+    setNewReserva(reserva);
+    setEditingReservacion(reserva);
   };
 
   return (
@@ -107,7 +121,10 @@ function Reservas() {
           </select>
         </div>
         <div className="col-12">
-          <button type="submit" className="btn btn-primary">Guardar Reserva</button>
+          <button type="submit" className="btn btn-primary">{editingReservacion ? 'Actualizar Reserva' : 'Guardar Reserva'}</button>
+          {editingReservacion && (
+            <button type="button" className="btn btn-secondary ms-2" onClick={() => { setEditingReservacion(null); setNewReserva({ clienteId: '', habitacionId: '', fechaLlegada: '', fechaSalida: '', estado: 'pendiente' }); }}>Cancelar</button>
+          )}
         </div>
       </form>
 
@@ -137,7 +154,12 @@ function Reservas() {
                 <td>{r.habitacionNumero}</td>
                 <td>{r.estado}</td>
                 <td>
-                  <button className="btn btn-sm btn-danger" onClick={() => handleDelete(r.id)}>Eliminar</button>
+                  {isAdmin() && (
+                    <>
+                      <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditReservacion(r)}>Editar</button>
+                      <button className="btn btn-sm btn-danger" onClick={() => handleDelete(r.id)}>Eliminar</button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))

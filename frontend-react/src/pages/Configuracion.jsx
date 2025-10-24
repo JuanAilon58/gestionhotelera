@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext'; // Importar useAuth
 
 const API_BASE_URL = "http://localhost:8080/api";
 
 function Configuracion() {
+  const { isAdmin } = useAuth(); // Obtener la función isAdmin
   const [tiposHabitacion, setTiposHabitacion] = useState([]);
   const [habitaciones, setHabitaciones] = useState([]);
   const [clientes, setClientes] = useState([]); // New state for clients
@@ -32,6 +34,8 @@ function Configuracion() {
   });
 
   const [editingCliente, setEditingCliente] = useState(null); // State for client being edited
+  const [editingHabitacion, setEditingHabitacion] = useState(null);
+  const [editingTipoHabitacion, setEditingTipoHabitacion] = useState(null);
 
   useEffect(() => {
     fetchTiposHabitacion();
@@ -87,13 +91,19 @@ function Configuracion() {
   const handleAddTipoHabitacion = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/tipos-habitacion`, newTipoHabitacion);
-      alert("✅ Tipo de habitación agregado correctamente");
+      if (editingTipoHabitacion) {
+        await axios.put(`${API_BASE_URL}/tipos-habitacion/${editingTipoHabitacion.id}`, newTipoHabitacion);
+        alert("✅ Tipo de habitación actualizado correctamente");
+        setEditingTipoHabitacion(null);
+      } else {
+        await axios.post(`${API_BASE_URL}/tipos-habitacion`, newTipoHabitacion);
+        alert("✅ Tipo de habitación agregado correctamente");
+      }
       setNewTipoHabitacion({ nombre: '', descripcion: '', capacidad: 1, precio: 0 });
       fetchTiposHabitacion();
     } catch (error) {
-      console.error("Error al agregar tipo de habitación:", error);
-      alert("No se pudo agregar el tipo de habitación.");
+      console.error("Error al guardar tipo de habitación:", error);
+      alert("No se pudo guardar el tipo de habitación.");
     }
   };
 
@@ -112,13 +122,19 @@ function Configuracion() {
   const handleAddHabitacion = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/habitaciones`, newHabitacion);
-      alert("✅ Habitación agregada correctamente");
+      if (editingHabitacion) {
+        await axios.put(`${API_BASE_URL}/habitaciones/${editingHabitacion.id}`, newHabitacion);
+        alert("✅ Habitación actualizada correctamente");
+        setEditingHabitacion(null);
+      } else {
+        await axios.post(`${API_BASE_URL}/habitaciones`, newHabitacion);
+        alert("✅ Habitación agregada correctamente");
+      }
       setNewHabitacion({ numero: '', tipoHabitacionId: '', estado: 'disponible' });
       fetchHabitaciones();
     } catch (error) {
-      console.error("Error al agregar habitación:", error);
-      alert("No se pudo agregar la habitación.");
+      console.error("Error al guardar habitación:", error);
+      alert("No se pudo guardar la habitación.");
     }
   };
 
@@ -156,6 +172,16 @@ function Configuracion() {
   const handleEditCliente = (cliente) => {
     setNewCliente(cliente);
     setEditingCliente(cliente);
+  };
+
+  const handleEditHabitacion = (habitacion) => {
+    setNewHabitacion({ ...habitacion, tipoHabitacionId: habitacion.tipoHabitacionId });
+    setEditingHabitacion(habitacion);
+  };
+
+  const handleEditTipoHabitacion = (tipo) => {
+    setNewTipoHabitacion(tipo);
+    setEditingTipoHabitacion(tipo);
   };
 
   const handleDeleteCliente = async (id) => {
@@ -204,7 +230,10 @@ function Configuracion() {
               </select>
             </div>
             <div className="col-md-2">
-              <button type="submit" className="btn btn-success w-100">Agregar</button>
+              <button type="submit" className="btn btn-success w-100">{editingHabitacion ? 'Actualizar' : 'Agregar'}</button>
+              {editingHabitacion && (
+                <button type="button" className="btn btn-secondary w-100 mt-2" onClick={() => { setEditingHabitacion(null); setNewHabitacion({ numero: '', tipoHabitacionId: '', estado: 'disponible' }); }}>Cancelar</button>
+              )}
             </div>
           </form>
 
@@ -219,7 +248,14 @@ function Configuracion() {
                 habitaciones.map(h => (
                   <tr key={h.id}>
                     <td>{h.numero}</td><td>{h.tipoHabitacionNombre}</td><td>{h.estado}</td>
-                    <td><button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteHabitacion(h.id)}>Eliminar</button></td>
+                    <td>
+                      {isAdmin() && (
+                        <>
+                          <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditHabitacion(h)}>Editar</button>
+                          <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteHabitacion(h.id)}>Eliminar</button>
+                        </>
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -245,7 +281,10 @@ function Configuracion() {
               <input type="number" className="form-control" id="precio" placeholder="Precio (USD)" value={newTipoHabitacion.precio} onChange={handleTipoHabitacionChange} required />
             </div>
             <div className="col-md-3">
-              <button type="submit" className="btn btn-success w-100">Agregar Tipo</button>
+              <button type="submit" className="btn btn-success w-100">{editingTipoHabitacion ? 'Actualizar' : 'Agregar Tipo'}</button>
+              {editingTipoHabitacion && (
+                <button type="button" className="btn btn-secondary w-100 mt-2" onClick={() => { setEditingTipoHabitacion(null); setNewTipoHabitacion({ nombre: '', descripcion: '', capacidad: 1, precio: 0 }); }}>Cancelar</button>
+              )}
             </div>
           </form>
 
@@ -254,7 +293,12 @@ function Configuracion() {
               tiposHabitacion.map(tipo => (
                 <li key={tipo.id} className="list-group-item d-flex justify-content-between align-items-center">
                   {tipo.nombre} (Cap: {tipo.capacidad}, Precio: ${tipo.precio})
-                  <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteTipoHabitacion(tipo.id)}>Eliminar</button>
+                  {isAdmin() && (
+                    <>
+                      <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditTipoHabitacion(tipo)}>Editar</button>
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteTipoHabitacion(tipo.id)}>Eliminar</button>
+                    </>
+                  )}
                 </li>
               ))
             ) : (
@@ -308,8 +352,12 @@ function Configuracion() {
                   <tr key={c.id}>
                     <td>{c.id}</td><td>{c.nombre}</td><td>{c.apellido}</td><td>{c.email}</td><td>{c.telefono}</td>
                     <td>
-                      <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditCliente(c)}>Editar</button>
-                      <button className="btn btn-sm btn-danger" onClick={() => handleDeleteCliente(c.id)}>Eliminar</button>
+                      {isAdmin() && (
+                        <>
+                          <button className="btn btn-sm btn-warning me-2" onClick={() => handleEditCliente(c)}>Editar</button>
+                          <button className="btn btn-sm btn-danger" onClick={() => handleDeleteCliente(c.id)}>Eliminar</button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))

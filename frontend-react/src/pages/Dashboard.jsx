@@ -32,7 +32,7 @@ function Dashboard() {
 
   return (
     <div className="modulo">
-      <h2 className="section-title">🏠 Dashboard / Recepción</h2>
+      <h2 className="section-title">🏠 Panel de Recepción</h2>
       <div className="d-flex justify-content-around mb-4">
         <Link to="/checkin" className="btn btn-success">Check-In</Link>
         <Link to="/checkout" className="btn btn-danger">Check-Out</Link>
