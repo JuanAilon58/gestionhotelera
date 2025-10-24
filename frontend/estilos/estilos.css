@@ -1,0 +1,72 @@
+/* ==========================================================
+   ESTILOS GENERALES DEL SISTEMA HOTELERO
+========================================================== */
+
+body {
+  background-color: #f8f9fa;
+}
+
+/* Contenedor general de módulos */
+.modulo {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Títulos principales */
+.section-title {
+  color: #0d6efd;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* =============================
+   ESTILOS DEL DASHBOARD
+============================= */
+
+/* Rack visual */
+.rack {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+/* Tarjeta individual de habitación */
+.habitacion {
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+}
+
+/* Estados visuales */
+.libre { background-color: #198754; }        /* Verde */
+.ocupada { background-color: #dc3545; }      /* Rojo */
+.sucia { background-color: #ffc107; color: #212529; } /* Amarillo */
+.mantenimiento { background-color: #6c757d; } /* Gris */
+.reservada { background-color: #0d6efd; }    /* Azul */
+/* Estilos para el modal de asignación */
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-footer {
+  border-top: none;
+}
+/* Folio */
+#folioDetalle h4 {
+  color: #0d6efd;
+  font-weight: bold;
+}
+/* Check-Out */
+#saldoCheckout {
+  font-size: 1.3rem;
+}
+/* Ama de Llaves */
+.badge {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
