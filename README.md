@@ -2,6 +2,10 @@
 
 Este es un sistema de gestión hotelera con un backend desarrollado en Java (Spring Boot) y un frontend en React.
 
+# COLABORADORES  
+   * Juan Ailón Ortíz     0904-21-7685
+   * Allan Roberto López Féñix 0904-22-8732
+
 ## Características Principales
 
 Este sistema permite una administración integral de las operaciones de un hotel, incluyendo:
